@@ -1,61 +1,16 @@
-import fs from "fs/promises";
-import path from "path";
-import { nanoid } from "nanoid";
+import Contact from "../models/Contact.js";
 
-const contactsPath = path.resolve("db", "contacts.json");
+const getAllContacts = () => Contact.find();
 
-const getAllContacts = async () => {
-    const data = await fs.readFile(contactsPath);
-    return JSON.parse(data);
-};
+const getOneContact = (id) => Contact.findById(id);
 
-const getOneContact = async (id) => {
-    const contacts = await getAllContacts();
-    return contacts.find((contact) => contact.id === id) || null;
-};
+const deleteContact = (id) => Contact.findByIdAndDelete(id);
 
-const deleteContact = async (id) => {
-    const contacts = await getAllContacts();
-    const contactIndex = contacts.findIndex((contact) => contact.id === id);
+const createContact = (data) => Contact.create(data);
 
-    if (contactIndex === -1) {
-        return null;
-    }
+const updateContact = (id, data) => Contact.findByIdAndUpdate(id, data);
 
-    const [deletedContact] = contacts.splice(contactIndex, 1);
-
-    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-    return deletedContact;
-};
-
-const createContact = async (data) => {
-    const contacts = await getAllContacts();
-
-    const newContact = {
-        id: nanoid(),
-        ...data,
-    };
-
-    contacts.push(newContact);
-    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-
-    return newContact;
-};
-
-const updateContact = async (id, data) => {
-    const contacts = await getAllContacts();
-    const contactIndex = contacts.findIndex((contact) => contact.id === id);
-
-    if (contactIndex === -1) {
-        return null;
-    }
-
-    contacts[contactIndex] = {...contacts[contactIndex], ...data}
-
-    await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-
-    return contacts[contactIndex]
-};
+const updateStatusContact = async (id, data) => Contact.findByIdAndUpdate(id, data);
 
 export default {
     getAllContacts,
@@ -63,4 +18,5 @@ export default {
     deleteContact,
     createContact,
     updateContact,
+    updateStatusContact,
 };
