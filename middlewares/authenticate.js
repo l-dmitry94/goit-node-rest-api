@@ -13,13 +13,7 @@ const authenticate = async (req, res, next) => {
     const [bearer, token] = authorization.split(" ");
 
     if (bearer !== "Bearer") {
-        return res.status(401).kson({
-            Status: "401 Unauthorized",
-            "Content-Type": "application/json",
-            ResponseBody: {
-                message: "Not authorized",
-            },
-        });
+        throw HttpError(401, "Not authorized");
     }
 
     try {
@@ -27,23 +21,11 @@ const authenticate = async (req, res, next) => {
         const user = await authServices.findUser({ _id: id });
 
         if (!user) {
-            return res.status(401).kson({
-                Status: "401 Unauthorized",
-                "Content-Type": "application/json",
-                ResponseBody: {
-                    message: "Not authorized",
-                },
-            });
+            throw HttpError(401, "Not authorized");
         }
 
         if (!user.token) {
-            return res.status(401).kson({
-                Status: "401 Unauthorized",
-                "Content-Type": "application/json",
-                ResponseBody: {
-                    message: "Not authorized",
-                },
-            });
+            throw HttpError(401, "Not authorized");
         }
 
         req.user = user;

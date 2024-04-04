@@ -12,13 +12,7 @@ export const signup = async (req, res, next) => {
         const user = await authServices.findUser({ email });
 
         if (user) {
-            return res.status(409).json({
-                Status: "409 Conflict",
-                "Content-Type": "application/json",
-                ResponseBody: {
-                    message: "Email in use",
-                },
-            });
+            throw HttpError(409, "Email in use");
         }
 
         const hashPassword = await bcrypt.hash(password, 10);
@@ -26,13 +20,9 @@ export const signup = async (req, res, next) => {
         const newUser = await authServices.signup({ ...req.body, password: hashPassword });
 
         res.status(201).json({
-            Status: "201 Created",
-            "Content-Type": "application/json",
-            ResponseBody: {
-                user: {
-                    email: newUser.email,
-                    subscription: newUser.subscription,
-                },
+            user: {
+                email: newUser.email,
+                subscription: newUser.subscription,
             },
         });
     } catch (error) {
@@ -43,25 +33,16 @@ export const signup = async (req, res, next) => {
 export const signin = async (req, res, next) => {
     try {
         const { email, password } = req.body;
+        console.log(req.body);
         const user = await authServices.findUser({ email });
         if (!user) {
-            return res.status(401).json({
-                Status: "401 Unauthorized",
-                ResponseBody: {
-                    message: "Email or password is wrong",
-                },
-            });
+            throw HttpError(401, "Email or password is wrong");
         }
 
         const passwordCompare = await bcrypt.compare(password, user.password);
 
         if (!passwordCompare) {
-            return res.status(401).json({
-                Status: "401 Unauthorized",
-                ResponseBody: {
-                    message: "Email or password is wrong",
-                },
-            });
+            throw HttpError(401, "Email or password is wrong");
         }
 
         const { _id: id } = user;
@@ -75,13 +56,9 @@ export const signin = async (req, res, next) => {
         await authServices.updateUser({ _id: id }, { token });
 
         res.status(200).json({
-            Status: "200 OK",
-            "Content-Type": "application/json",
-            ResponseBody: {
-                token,
-                user: {
-                    email,
-                },
+            user: {
+                email: user.email,
+                subscription: user.subscription,
             },
         });
     } catch (error) {
@@ -94,11 +71,7 @@ export const getCurrent = async (req, res, next) => {
         const { email } = req.user;
 
         res.status(200).json({
-            Status: "200 OK",
-            "Content-Type": "application/json",
-            ResponseBody: {
                 email,
-            },
         });
     } catch (error) {
         next(error);
