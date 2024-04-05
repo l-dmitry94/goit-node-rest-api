@@ -5,22 +5,22 @@ const getAllContacts = (filter = {}, setting = {}) =>
 
 const countContacts = filter => Contact.countDocuments(filter)
 
-const getOneContact = (id) => Contact.findById(id);
+const getOneContactByFilter = (filter) => Contact.findOne(filter);
 
-const deleteContact = (id) => Contact.findByIdAndDelete(id);
+const deleteContactByFilter = (filter) => Contact.findOneAndDelete(filter);
 
 const createContact = (data) => Contact.create(data);
 
-const updateContact = (id, data) => Contact.findByIdAndUpdate(id, data);
+const updateContactByFilter = (filter, data) => Contact.findOneAndUpdate(filter, data);
 
 const updateStatusContact = async (id, data) => Contact.findByIdAndUpdate(id, data);
 
 export default {
     getAllContacts,
-    getOneContact,
-    deleteContact,
+    getOneContactByFilter,
+    deleteContactByFilter,
     createContact,
-    updateContact,
+    updateContactByFilter,
     updateStatusContact,
     countContacts
 };

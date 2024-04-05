@@ -17,7 +17,10 @@ export const signup = async (req, res, next) => {
 
         const hashPassword = await bcrypt.hash(password, 10);
 
-        const newUser = await authServices.signup({ ...req.body, password: hashPassword });
+        const newUser = await authServices.signup({
+            ...req.body,
+            password: hashPassword,
+        });
 
         res.status(201).json({
             user: {
@@ -56,6 +59,7 @@ export const signin = async (req, res, next) => {
         await authServices.updateUser({ _id: id }, { token });
 
         res.status(200).json({
+            token,
             user: {
                 email: user.email,
                 subscription: user.subscription,
@@ -68,10 +72,11 @@ export const signin = async (req, res, next) => {
 
 export const getCurrent = async (req, res, next) => {
     try {
-        const { email } = req.user;
+        const { email, subscription } = req.user;
 
         res.status(200).json({
-                email,
+            email,
+            subscription
         });
     } catch (error) {
         next(error);
