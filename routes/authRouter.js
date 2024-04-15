@@ -1,7 +1,7 @@
 import express from "express";
-import { signup, signin, getCurrent, logout, updateAvatar } from "../controllers/authControllers.js";
+import { signup, signin, getCurrent, logout, updateAvatar, verify, resendVerify } from "../controllers/authControllers.js";
 import validateBody from "../helpers/validateBody.js";
-import { userSigninSchema, userSignupSchema } from "../schemas/userSchema.js";
+import { userEmailSchema, userSigninSchema, userSignupSchema } from "../schemas/userSchema.js";
 import authenticate from "../middlewares/authenticate.js";
 import upload from "../middlewares/upload.js";
 
@@ -15,6 +15,10 @@ authRoute.get("/current", authenticate, getCurrent);
 
 authRoute.post("/logout", authenticate, logout);
 
-authRoute.patch("/avatars", upload.single("avatar"), authenticate, updateAvatar)
+authRoute.patch("/avatars", upload.single("avatar"), authenticate, updateAvatar);
+
+authRoute.get("/verify/:verificationToken", verify);
+
+authRoute.post("/verify", validateBody(userEmailSchema), resendVerify)
 
 export default authRoute;
